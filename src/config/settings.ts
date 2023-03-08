@@ -16,7 +16,9 @@ export const APP_BASE_URL = process.env.APP_BASE_URL ?? "http://localhost:8000/a
 export const NETWORK_PATH = process.env.NETWORK_PATH ?? "mainnet";
 export const ALCHEMY_KEY = process.env.ALCHEMY_KEY ?? "";
 export const ALCHEMY_NODE = process.env.ALCHEMY_NODE;
-export const MESSAGE_RETRY_LIMIT = parseInt(process.env.MESSAGE_RETRY_LIMIT ?? "100000")
+export const MESSAGE_RETRY_LIMIT = parseInt(process.env.MESSAGE_RETRY_LIMIT ?? "100000");
+export const NODE_URL = process.env.NODE_URL ?? "https://data-seed-prebsc-1-s1.binance.org:8545/"
+export const PORT = process.env.PORT;
 
 //Database Specific Configs 
 export const DB_TYPE = process.env.DB_TYPE ?? "mysql"

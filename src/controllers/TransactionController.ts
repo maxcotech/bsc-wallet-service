@@ -1,6 +1,5 @@
 import Controller from './Controller';
 import TransactionService from '../services/TransactionService';
-import WalletServices from './../services/WalletServices';
 import { HttpRequestParams } from './../dataTypes/Http';
 import { VAULT_ADDRESS } from '../config/settings';
 import AppDataSource from '../config/dataSource';

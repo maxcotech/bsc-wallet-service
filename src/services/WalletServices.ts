@@ -4,7 +4,6 @@ import * as ecc from "tiny-secp256k1";
 import { ethers } from "ethers";
 import AppDataSource from "../config/dataSource";
 import Wallet from "../entities/Wallet";
-import { config } from "dotenv";
 import { decryptValue } from "../helpers/object_helpers";
 import { ENCRYPTION_PASSPHRASE, VAULT_ADDRESS, VAULT_PRIV_KEY } from "../config/settings";
 import TransactionService from "./TransactionService";

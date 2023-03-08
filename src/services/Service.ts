@@ -1,24 +1,13 @@
 import  Axios, { AxiosInstance } from "axios";
-<<<<<<< HEAD
-import * as bitcoin from "bitcoinjs-lib";
-import { config } from "dotenv";
-=======
->>>>>>> 9263669e00eb225d4aef4b1aac66231d011c96fa
 import { ethers } from 'ethers';
 import AppDataSource from "../config/dataSource";
 import { Repository } from 'typeorm';
 import Contract from "../entities/Contract";
 import { transactionErrors } from "../config/errors/transaction.errors";
-<<<<<<< HEAD
-import { APP_BASE_URL, GB_API_KEY } from "../config/settings";
+import { APP_BASE_URL, GB_API_KEY, NETWORK_PATH } from "../config/settings";
 import { getClientSecret } from "../helpers/auth_helpers";
 import { AUTH_HEADER_KEY } from "../config/appConstants";
-=======
-import { ALCHEMY_KEY, APP_BASE_URL, GB_API_KEY, NETWORK_PATH } from "../config/settings";
-import { getClientSecret } from "../helpers/auth_helpers";
-import { AUTH_HEADER_KEY } from "../config/appConstants";
-import { ALCHEMY_NODE } from './../config/settings';
->>>>>>> 9263669e00eb225d4aef4b1aac66231d011c96fa
+import { NODE_URL } from './../config/settings';
 
 class Service {
     
@@ -33,20 +22,12 @@ class Service {
 
 
     constructor(){
-<<<<<<< HEAD
-        this.network = bitcoin.networks.testnet;
         this.apiKey = GB_API_KEY;
-        this.baseUrl = `https://eth.getblock.io/testnet/?api_key=${this.apiKey}`;
-        this.wsBaseUrl = `wss://eth.getblock.io/testnet/?api_key=${this.apiKey}`;
-        this.provider = new ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s1.binance.org:8545/")  //JsonRpcProvider(this.baseUrl);
-=======
-        this.apiKey = GB_API_KEY;
-        this.baseUrl = `https://eth.getblock.io/${NETWORK_PATH}/?api_key=${this.apiKey}`;
-        this.wsBaseUrl = `wss://eth.getblock.io/${NETWORK_PATH}/?api_key=${this.apiKey}`;
-        this.provider = new ethers.providers.AlchemyProvider(ALCHEMY_NODE,ALCHEMY_KEY);
->>>>>>> 9263669e00eb225d4aef4b1aac66231d011c96fa
+        this.baseUrl = `https://bsc.getblock.io/${NETWORK_PATH}/?api_key=${this.apiKey}`;
+        this.wsBaseUrl = `wss://bsc.getblock.io/${NETWORK_PATH}/?api_key=${this.apiKey}`;
+        this.provider = new ethers.providers.JsonRpcProvider(NODE_URL)  //JsonRpcProvider(this.baseUrl);
         this.contractRepo = AppDataSource.getRepository(Contract);      
-    }
+    }       
 
 
     getConnection(){

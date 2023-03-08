@@ -2,25 +2,22 @@ import ReceivedTransaction from "../entities/ReceivedTransaction";
 import Service from "./Service";
 import AppDataSource from './../config/dataSource';
 import MessageQueue from "../entities/MessageQueue";
-<<<<<<< HEAD
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import Contract from './../entities/Contract';
-=======
-import { FindOperator, IsNull, MoreThanOrEqual, Not, Repository } from 'typeorm';
-import Contract from './../entities/Contract';
-import { transactionErrors } from "../config/errors/transaction.errors";
->>>>>>> 9263669e00eb225d4aef4b1aac66231d011c96fa
 import { MESSAGE_RETRY_LIMIT, WALLET_DEFAULT_SYMBOL } from "../config/settings";
 import { MessageTypes } from "../config/enums";
 import { AxiosError } from "axios";
+import FailedQueueMessage from "../entities/FailedQueueMessage";
 
 export default class MessageQueueService extends Service {
     messageRepo: Repository<MessageQueue>
     contractRepo: Repository<Contract>
+    failedMessageRepo: Repository<FailedQueueMessage>
     constructor(){
         super();
         this.messageRepo = AppDataSource.getRepository(MessageQueue);
         this.contractRepo = AppDataSource.getRepository(Contract);
+        this.failedMessageRepo = AppDataSource.getRepository(FailedQueueMessage);
     }
 
     async fetchQueue(){
@@ -73,7 +70,7 @@ export default class MessageQueueService extends Service {
         newFailedMsg.retried = message.retries;
         newFailedMsg.messageId = message.id;
         newFailedMsg.type = message.type;
-        let savedFailedMsg = null;
+        let savedFailedMsg: FailedQueueMessage | null = null;
         await AppDataSource.transaction(async () => {
             savedFailedMsg = await this.failedMessageRepo.save(newFailedMsg);
             await this.messageRepo.delete({id: message.id});
@@ -81,11 +78,33 @@ export default class MessageQueueService extends Service {
         return savedFailedMsg;
     }
 
-<<<<<<< HEAD
+    async reQueueFailedMessages(){
+        try{
+            const items = await this.failedMessageRepo.find();
+            if(items.length > 0){
+                const messages: MessageQueue[] = [];
+                const failedIdsToDelete: number[] = [];
+                items.forEach((item) => {
+                    const newMessage = new MessageQueue();
+                    newMessage.message = item.message;
+                    newMessage.type = item.type;                                                                                                                                                                   
+                    newMessage.retries = 0;
+                    messages.push(newMessage);
+                    failedIdsToDelete.push(item.id);
+                })
+                await AppDataSource.transaction(async () => {
+                    await this.messageRepo.insert(messages);
+                    await this.failedMessageRepo.delete({id: In(failedIdsToDelete)})
+                })
+                return 'Successfully requeued all failed messages';
+            }
+            return "No failed messages to requeue";
+        }
+        catch(e){
+            return 'Failed to restore failed messages '+((e instanceof Error)? e.message: "");
+        }
+    }
 
-
-=======
->>>>>>> 9263669e00eb225d4aef4b1aac66231d011c96fa
 
     async queueCreditTransaction(txnData: ReceivedTransaction){
         try{

@@ -110,10 +110,11 @@ export default class AppService extends Service {
         try{
             const inputData = transaction.data;
             const contractAddress = transaction.to;
+            const txnService = new TransactionService();
             if(inputData.indexOf(TRANSFER_FUNC_BYTE) !== -1){
                 const contract = await this.contractRepo.findOne({where:{contractAddress: contractAddress}});
                 if(contract !== null){
-                    const contractInterface = new ethers.utils.Interface(JSON.parse(contract.contractAbi));
+                    const contractInterface = new ethers.utils.Interface(JSON.parse(contract.contractAbi ?? txnService.getDefaultAbi()));
                     const parsedTxn = contractInterface.parseTransaction({data:transaction.data,value:transaction.value});
                     const toAddress = parsedTxn.args[0]?.toLowerCase() ?? "";
                     const walletRecord = await this.walletRepo.findOne({where:{address:toAddress}});
@@ -122,7 +123,7 @@ export default class AppService extends Service {
                         console.log('Found related contract transaction',transaction.hash)
                         const value = parsedTxn.args[1];
                         const valueInEther = ethers.utils.formatUnits(value,contract?.decimalPlaces ?? DECIMAL_PLACES);
-                        const txnService = new TransactionService();
+                       
                         const newReceivedTxn = await txnService.saveReceivedTransaction(toAddress,sentToVault,transaction.hash,valueInEther,contract.id);
                         if(!!newReceivedTxn){
                             if(sentToVault === false){
@@ -150,8 +151,12 @@ export default class AppService extends Service {
         
     }
 
+    public async getLatestBlock(){
+        return await this.provider.getBlockNumber();
+    }
+
     public async syncMissingBlocks(){
-        const latestBlockNum = await this.provider.getBlockNumber();
+        const latestBlockNum = await this.getLatestBlock();
         const lastIndexed = await this.getLastIndexedNumber();
         console.log({latestBlockNum,lastIndexed});
         if(lastIndexed > 0){
