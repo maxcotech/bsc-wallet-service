@@ -6,35 +6,39 @@ import { CLIENT_AUTH } from '../config/settings';
 import { successWithData } from '../config/responseTypes';
 import AppException from './../exceptions/AppException';
 
-export async function requireAuthKey(controller: (params: HttpRequestParams) =>  Promise<any>): Promise<RequestHandler> {
+export async function requireAuthKey(controller: (params: HttpRequestParams) => Promise<any>): Promise<RequestHandler> {
     return async (req: Request, res: Response) => {
-        try{
+        try {
             const clientAuth = req.headers[AUTH_HEADER_KEY];
-            if(clientAuth && authKeyIsValid(clientAuth)){
-                const data = await controller({req,res})
-                return successWithData(data,res);
+            if (clientAuth && authKeyIsValid(clientAuth)) {
+                const data = await controller({ req, res })
+                return successWithData(data, res);
             }
             return res.status(401).json({
                 success: false,
                 message: generalErrors.notAuthorized
             })
         }
-        catch(e){
-            if(e instanceof AppException){
-                res.status(e.errorCode).json({
+        catch (e) {
+            if (e instanceof AppException) {
+                return res.status(e.errorCode).json({
                     success: false,
                     message: e.message ?? generalErrors.internalServerError
                 })
             }
-           
+            return res.status(500).json({
+                success: false,
+                message: generalErrors.internalServerError
+            });
+
         }
     }
 }
 
-function authKeyIsValid(authKey: any){
+function authKeyIsValid(authKey: any) {
     return (authKey === CLIENT_AUTH);
 }
 
-export async function getClientSecret(){
+export async function getClientSecret() {
     return CLIENT_AUTH;
 }
