@@ -1,4 +1,4 @@
-import  Axios, { AxiosInstance } from "axios";
+import Axios, { AxiosInstance } from "axios";
 import { ethers } from 'ethers';
 import AppDataSource from "../config/dataSource";
 import { Repository } from 'typeorm';
@@ -10,7 +10,7 @@ import { AUTH_HEADER_KEY } from "../config/appConstants";
 import { NODE_URL } from './../config/settings';
 
 class Service {
-    
+
     baseUrl: string;
     wsBaseUrl: string;
     provider: ethers.providers.JsonRpcProvider;
@@ -21,35 +21,35 @@ class Service {
     contractRepo: Repository<Contract>
 
 
-    constructor(){
+    constructor() {
         this.apiKey = GB_API_KEY;
         this.baseUrl = `https://bsc.getblock.io/${NETWORK_PATH}/?api_key=${this.apiKey}`;
         this.wsBaseUrl = `wss://bsc.getblock.io/${NETWORK_PATH}/?api_key=${this.apiKey}`;
         this.provider = new ethers.providers.JsonRpcProvider(NODE_URL)  //JsonRpcProvider(this.baseUrl);
-        this.contractRepo = AppDataSource.getRepository(Contract);      
-    }       
+        this.contractRepo = AppDataSource.getRepository(Contract);
+    }
 
 
-    getConnection(){
+    getConnection() {
         return this;
     }
 
-    async getContract(contractId: number){
-        const contract = await this.contractRepo.findOneBy({id: contractId});
-        if(contract === null) throw new Error(transactionErrors.invalidContractTransaction);
+    async getContract(contractId: number) {
+        const contract = await this.contractRepo.findOneBy({ id: contractId });
+        if (contract === null) throw new Error(transactionErrors.invalidContractTransaction);
         return contract;
     }
 
-    async appClient(){
-        const headers = {'Content-Type':"application/json"}
+    async appClient() {
+        const headers = { 'Content-Type': "application/json" }
         headers[AUTH_HEADER_KEY] = await getClientSecret();
         return Axios.create({ baseURL: APP_BASE_URL, headers })
     }
 
 
-    
 
-    getSingleParamReqBody(param: string ,method: string, id: string = "servicecall"){
+
+    getSingleParamReqBody(param: string, method: string, id: string = "servicecall") {
         return {
             id,
             jsonrpc: this.jsonrpcVersion,
@@ -58,13 +58,13 @@ class Service {
         }
     }
 
-    getRequest(method: string, params: Array<any> = [], id: string = "servicecall"){
-        return this.client.post("",JSON.stringify({
+    getRequest(method: string, params: Array<any> = [], id: string = "servicecall") {
+        return this.client.post("", JSON.stringify({
             id,
             jsonrpc: this.jsonrpcVersion,
             method,
             params
-        }),{
+        }), {
             maxContentLength: Infinity
         })
     }
