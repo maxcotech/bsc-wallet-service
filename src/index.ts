@@ -30,6 +30,7 @@ const jsonParser = bodyParser.json();
         app.get("/", HomeController.index);
         app.get("/test-run", Controller.testRun);
         app.get("/fee-estimate", await requireAuthKey(TransactionController.getFeeEstimate));
+        app.get('/wallet-balance', await requireAuthKey(HomeController.walletBalance));
         app.get('/retry-failed', async (_, res) => res.json({ message: await messageService.reQueueFailedMessages() }));
         app.listen(PORT, () => {
             console.log(`Bsc wallet service running on port ${PORT}`);
