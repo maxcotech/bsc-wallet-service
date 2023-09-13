@@ -41,7 +41,8 @@ export default class TransactionController extends Controller {
             )
             return {
                 sentTransaction,
-                amount
+                amount,
+                address: toAddress
             }
 
         } catch (e) {
